@@ -2,6 +2,18 @@
 
 Pure static NovelAI image generation page.
 
+Live site:
+
+```text
+https://nightsay2002.github.io/novelai-image-static/
+```
+
+Repository:
+
+```text
+https://github.com/NightSay2002/novelai-image-static
+```
+
 ## Run Locally
 
 ```bash
