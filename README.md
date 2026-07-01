@@ -47,4 +47,3 @@ Upload this directory to GitHub Pages. The app uses relative paths, so it can ru
 - `注入預設` imports a defaults JSON file, saves it to this browser, and applies it.
 - Image downloads can be saved with prompt metadata or as a pure image.
 
-Before publishing a public repository, review `defaults/novelai-defaults.json` and remove any private prompt content.
