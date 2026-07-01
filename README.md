@@ -26,10 +26,6 @@ Open:
 http://localhost:8080/
 ```
 
-## Deploy
-
-Upload this directory to GitHub Pages. The app uses relative paths, so it can run from a repository subpath.
-
 ## Token Storage
 
 - By default, the NovelAI token is saved only in `sessionStorage`.
