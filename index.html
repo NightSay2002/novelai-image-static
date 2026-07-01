@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovelAI Image Generator</title>
+    <link rel="icon" type="image/png" href="./assets/img/icon.png" />
+    <link rel="apple-touch-icon" href="./assets/img/icon.png" />
+    <link rel="stylesheet" href="./styles.css?v=20260701-static1" />
+  </head>
+  <body class="novelai-bright-body">
+    <main class="nai-bright-shell">
+      <aside class="nai-left-panel" aria-label="NovelAI 設定">
+        <header class="nai-panel-header">
+          <div>
+            <h1>NAI跑圖 <span class="nai-title-ciallo">Ciallo～(∠・ω&lt; )⌒☆</span></h1>
+            <h2 class="nai-credit-line">
+              <span>
+                功能從
+                <a href="https://github.com/NightSay2002/time_tavern" target="_blank" rel="noopener noreferrer">『時分居酒屋』</a>
+                拆出
+              </span>
+              <span>
+                作者
+                <a href="https://github.com/NightSay2002" target="_blank" rel="noopener noreferrer">NightSay2002</a>
+              </span>
+            </h2>
+            <p id="novelAiStatus">Token: 未設定</p>
+          </div>
+          <button id="novelAiRefreshStatusBtn" type="button" class="nai-icon-button" title="檢查 Token">↻</button>
+        </header>
+
+        <form id="novelAiForm" class="nai-settings-form">
+          <div class="nai-control-scroll">
+            <section class="nai-card nai-token-card">
+              <div class="nai-card-title">
+                <strong>NovelAI API Token</strong>
+                <span>使用自己的 Persistent API Token</span>
+              </div>
+              <label>Token
+                <input id="novelAiApiToken" type="password" autocomplete="off" spellcheck="false" placeholder="Bearer token 不需要加 Bearer" />
+              </label>
+              <div class="nai-token-actions">
+                <label class="nai-switch nai-switch-field">
+                  <input id="novelAiRememberToken" type="checkbox" />
+                  記住 Token
+                </label>
+                <button id="novelAiClearTokenBtn" type="button" class="muted">清除</button>
+              </div>
+              <p class="nai-card-hint">未勾選時只保存到目前分頁；勾選後會保存到這個瀏覽器。</p>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title">
+                <strong>模型</strong>
+                <span id="novelAiModelDescription">Our newest and best model.</span>
+              </div>
+              <select id="novelAiModel"></select>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title">
+                <strong>Base Prompt</strong>
+              </div>
+              <textarea id="novelAiPrompt" rows="8" placeholder="1girl, masterpiece, best quality"></textarea>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title nai-title-row">
+                <strong>Fixed Prompt</strong>
+                <button id="novelAiAddFixedPromptBtn" type="button" class="secondary">新增</button>
+              </div>
+              <p class="nai-card-hint">常用服裝、姿勢、場景 prompt；點擊名字會插入 ||名字||，Generate 時才展開。</p>
+              <div id="novelAiFixedPromptList" class="nai-fixed-prompt-list"></div>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title nai-title-row">
+                <strong>Random Prompt</strong>
+                <button id="novelAiAddRandomPromptBtn" type="button" class="secondary">新增</button>
+              </div>
+              <p class="nai-card-hint">點擊名字會插入 ||名字||；Generate 時才會抽選並展開。</p>
+              <div id="novelAiRandomPromptList" class="nai-random-prompt-list"></div>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title">
+                <strong>Undesired Content</strong>
+              </div>
+              <textarea id="novelAiNegativePrompt" rows="6" placeholder="lowres, bad anatomy, worst quality"></textarea>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title nai-title-row">
+                <strong>Character Prompts</strong>
+                <button id="novelAiAddCharacterBtn" type="button" class="secondary">新增</button>
+              </div>
+              <div id="novelAiCharacterList" class="nai-character-list"></div>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title">
+                <strong>Vibe Transfer</strong>
+              </div>
+              <p class="nai-card-hint">拖入圖片後選擇 Vibe Transfer。每張圖片都有獨立設定。</p>
+              <div id="novelAiVibeList" class="nai-reference-list"></div>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title">
+                <strong>Image2Image</strong>
+                <button id="novelAiClearBaseImageBtn" type="button" class="muted">清除</button>
+              </div>
+              <input id="novelAiBaseImageFile" type="file" accept="image/*" class="hidden" />
+              <input id="novelAiBaseImage" type="hidden" />
+              <div id="novelAiBaseImagePreview" class="nai-image-drop-card" role="button" tabindex="0">點擊選擇圖片，或直接拖到頁面任何位置</div>
+              <label class="nai-range-row">
+                <span>Strength</span>
+                <input id="novelAiStrength" type="range" min="0" max="1" step="0.01" value="0.7" />
+                <b data-range-value-for="novelAiStrength">0.70</b>
+              </label>
+              <label class="nai-range-row">
+                <span>Noise</span>
+                <input id="novelAiNoise" type="range" min="0" max="1" step="0.01" value="0" />
+                <b data-range-value-for="novelAiNoise">0.00</b>
+              </label>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title">
+                <strong>Precise Reference</strong>
+              </div>
+              <p class="nai-card-hint">拖入圖片後選擇 Precise Reference。每張圖片都有獨立設定。</p>
+              <div id="novelAiPreciseList" class="nai-reference-list"></div>
+            </section>
+
+            <section class="nai-card">
+              <div class="nai-card-title">
+                <strong>Image Settings</strong>
+              </div>
+              <label>尺寸
+                <select id="novelAiSizePreset">
+                  <option value="portrait">Normal Portrait 832x1216</option>
+                  <option value="landscape">Normal Landscape 1216x832</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </label>
+              <div class="nai-size-custom">
+                <label>寬<input id="novelAiWidth" type="number" min="64" max="2048" step="64" value="832" /></label>
+                <label>高<input id="novelAiHeight" type="number" min="64" max="2048" step="64" value="1216" /></label>
+              </div>
+              <input id="novelAiSamples" type="hidden" value="1" />
+            </section>
+
+            <details class="nai-card nai-ai-settings">
+              <summary>
+                <strong>AI Settings</strong>
+                <span><b>Steps</b><b>Guidance</b><b>Variety+</b><b>Seed</b><b>Sampler</b></span>
+                <span><em id="novelAiStepsSummary">28</em><em id="novelAiGuidanceSummary">6</em><em id="novelAiVarietySummary">On</em><em id="novelAiSeedSummary">N/A</em><em id="novelAiSamplerSummary">Euler Ancestral</em></span>
+              </summary>
+              <div class="nai-field-grid">
+                <label>Steps<input id="novelAiSteps" type="number" min="1" max="50" step="1" value="28" /></label>
+                <label>Prompt Guidance<input id="novelAiScale" type="number" min="0" max="20" step="0.1" value="6" /></label>
+                <label class="nai-switch nai-switch-field"><input id="novelAiVarietyPlus" type="checkbox" checked /> Variety+</label>
+                <label>Seed<input id="novelAiSeed" type="number" min="-1" step="1" placeholder="N/A" /></label>
+                <label>Sampler<select id="novelAiSampler"></select></label>
+                <label>Prompt Guidance Rescale<input id="novelAiCfgRescale" type="number" min="0" max="1" step="0.01" value="0" /></label>
+                <label>Noise Schedule<select id="novelAiNoiseSchedule"></select></label>
+              </div>
+            </details>
+
+            <section class="nai-card nai-metadata-card">
+              <div class="nai-card-title">
+                <strong>匯入設定</strong>
+              </div>
+              <input id="novelAiMetadataFile" type="file" accept="image/*" class="hidden" />
+              <input id="novelAiDefaultsFile" type="file" accept="application/json,.json" class="hidden" />
+              <button id="novelAiImportMetadataBtn" type="button" class="secondary">選擇圖片讀取 metadata</button>
+              <button id="novelAiSaveDefaultsBtn" type="button" class="secondary">保存預設</button>
+              <button id="novelAiApplyDefaultsBtn" type="button" class="secondary">啟用預設</button>
+              <button id="novelAiDownloadDefaultsBtn" type="button" class="secondary">下載預設</button>
+              <button id="novelAiInjectDefaultsBtn" type="button" class="secondary">注入預設</button>
+              <p id="novelAiMetadataStatus" class="nai-card-hint">預設會保存到使用者自己的瀏覽器本地；也可以直接把圖片拖進頁面，再選擇「匯入設定」。</p>
+            </section>
+          </div>
+
+          <footer class="nai-generate-bar">
+            <div class="nai-generate-size">
+              <span id="novelAiStageSize">832 × 1216</span>
+            </div>
+            <div class="nai-generate-actions">
+              <strong id="novelAiCostPreview" class="hidden" aria-hidden="true"></strong>
+              <label class="nai-loop-count-label">
+                <span>生成數量</span>
+                <input id="novelAiLoopCount" type="number" min="0" step="1" value="1" title="0 代表一直生成，直到停止。" />
+              </label>
+              <button id="novelAiLoopGenerateBtn" type="button"><span id="novelAiLoopGenerateLabel">Loop Generate</span></button>
+              <button id="novelAiGenerateBtn" type="submit"><span id="novelAiGenerateLabel">Generate</span></button>
+            </div>
+          </footer>
+        </form>
+      </aside>
+
+      <section class="nai-preview-panel" aria-label="生成圖片預覽">
+        <header>
+          <div>
+            <h2>生成圖片</h2>
+            <p>拖入圖片可選擇用途；右側歷史可切換預覽。</p>
+          </div>
+        </header>
+        <div id="novelAiOutputGrid" class="nai-main-output"></div>
+      </section>
+
+      <aside class="nai-history-panel" aria-label="生成歷史">
+        <header>
+          <div>
+            <strong>歷史</strong>
+            <span>點擊縮圖切換中間圖片</span>
+          </div>
+          <button id="novelAiRefreshAlbumBtn" type="button" class="nai-icon-button" title="刷新歷史">↻</button>
+        </header>
+        <div id="novelAiHistoryGrid" class="nai-history-list"></div>
+      </aside>
+    </main>
+
+    <div id="novelAiDropOverlay" class="nai-drop-overlay" aria-hidden="true">
+      <div>放開圖片，然後選擇用途</div>
+    </div>
+
+    <dialog id="novelAiDropChoiceDialog" class="nai-drop-choice-dialog">
+      <form method="dialog">
+        <h3>這張圖片要用在哪裡？</h3>
+        <div id="novelAiDropChoicePreview" class="nai-drop-choice-preview"></div>
+        <p id="novelAiDropChoiceText" class="nai-drop-choice-text">已接收到圖片。</p>
+        <div class="nai-drop-choice-actions">
+          <button type="button" data-drop-action="vibe">Vibe Transfer</button>
+          <button type="button" data-drop-action="img2img">Image2Image</button>
+          <button type="button" data-drop-action="precise">Precise Reference</button>
+          <button type="button" data-drop-action="metadata">匯入設定</button>
+          <button type="button" class="muted" data-drop-action="cancel">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="novelAiContentDialog" class="nai-content-dialog">
+      <form method="dialog">
+        <div class="nai-content-dialog-header">
+          <h3>圖片內容</h3>
+          <button type="submit" class="muted">關閉</button>
+        </div>
+        <textarea id="novelAiContentText" rows="18" readonly></textarea>
+      </form>
+    </dialog>
+
+    <dialog id="novelAiDownloadDialog" class="nai-download-dialog">
+      <form method="dialog">
+        <h3>下載圖片</h3>
+        <p>選擇下載方式。</p>
+        <div class="nai-download-actions">
+          <button type="button" data-download-mode="metadata">帶 Prompt / metadata</button>
+          <button type="button" data-download-mode="plain" class="secondary">純圖片</button>
+          <button type="button" data-download-mode="cancel" class="muted">取消</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="novelAiImageViewerDialog" class="nai-image-viewer-dialog">
+      <form method="dialog">
+        <div class="nai-content-dialog-header">
+          <h3 id="novelAiImageViewerTitle">圖片檢視</h3>
+          <button type="submit" class="muted">關閉</button>
+        </div>
+        <div id="novelAiImageViewerStage" class="nai-image-viewer-stage">
+          <img id="novelAiImageViewerImage" alt="放大檢視圖片" />
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast"></div>
+    <script type="module" src="./novelai.js?v=20260701-static1"></script>
+  </body>
+</html>
